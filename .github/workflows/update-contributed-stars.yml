@@ -35,13 +35,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add README.md
-          git commit \
-            -m "Keep profile project stars current" \
-            -m "The profile README contribution list is generated from a curated allowlist and the GitHub API so public proof points stay sorted without manual star-count edits.
+          cat > /tmp/profile-star-commit.txt <<'EOF'
+          Keep profile project stars current
 
-Constraint: Scheduled automation must only rewrite the generated README section
-Confidence: high
-Scope-risk: narrow
-Tested: python scripts/update_contributed_projects.py
-Not-tested: GitHub Actions scheduled run"
+          The profile README contribution list is generated from a curated allowlist
+          and the GitHub API so public proof points stay sorted without manual
+          star-count edits.
+
+          Constraint: Scheduled automation must only rewrite the generated README section
+          Confidence: high
+          Scope-risk: narrow
+          Tested: python scripts/update_contributed_projects.py
+          Not-tested: GitHub Actions scheduled run
+          EOF
+          sed -i 's/^          //' /tmp/profile-star-commit.txt
+          git commit -F /tmp/profile-star-commit.txt
           git push
