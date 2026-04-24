@@ -9,6 +9,7 @@ import re
 import sys
 import urllib.error
 import urllib.request
+import urllib.parse
 from pathlib import Path
 
 
@@ -17,12 +18,13 @@ README = ROOT / "README.md"
 REPOS = ROOT / ".github" / "contributed-repos.json"
 START = "<!-- contributed-projects:start -->"
 END = "<!-- contributed-projects:end -->"
+AUTHOR = "justinpbarnett"
 
 
-def github_request(repo: str) -> dict:
+def github_request(url: str) -> dict | list:
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
     request = urllib.request.Request(
-        f"https://api.github.com/repos/{repo}",
+        url,
         headers={
             "Accept": "application/vnd.github+json",
             "User-Agent": "justinpbarnett-profile-readme",
@@ -36,7 +38,7 @@ def github_request(repo: str) -> dict:
             return json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as error:
         details = error.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"GitHub API failed for {repo}: {error.code} {details}") from error
+        raise RuntimeError(f"GitHub API failed for {url}: {error.code} {details}") from error
 
 
 def load_repo_names() -> list[str]:
@@ -52,15 +54,46 @@ def format_stars(count: int) -> str:
     return f"{count:,}"
 
 
+def repo_metadata(repo: str) -> dict:
+    return github_request(f"https://api.github.com/repos/{repo}")
+
+
+def merged_prs_by_author(repo: str) -> list[dict]:
+    query = urllib.parse.quote(f"repo:{repo} is:pr is:merged author:{AUTHOR}")
+    data = github_request(f"https://api.github.com/search/issues?q={query}&per_page=25")
+    return data["items"]
+
+
+def has_approval_review(repo: str, pull_number: int) -> bool:
+    reviews = github_request(f"https://api.github.com/repos/{repo}/pulls/{pull_number}/reviews")
+    return any(review.get("state") == "APPROVED" for review in reviews)
+
+
+def qualifying_pull_request(repo: str) -> dict | None:
+    for pull in merged_prs_by_author(repo):
+        if has_approval_review(repo, pull["number"]):
+            return {
+                "number": pull["number"],
+                "url": pull["html_url"],
+            }
+    return None
+
+
 def build_section() -> str:
     repos = []
     for repo in load_repo_names():
-        data = github_request(repo)
+        pull = qualifying_pull_request(repo)
+        if not pull:
+            print(f"Skipping {repo}: no approved merged PR by {AUTHOR}", file=sys.stderr)
+            continue
+
+        data = repo_metadata(repo)
         repos.append(
             {
                 "name": data["full_name"],
                 "url": data["html_url"],
                 "stars": int(data["stargazers_count"]),
+                "pull": pull,
             }
         )
 
