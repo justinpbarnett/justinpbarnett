@@ -1,0 +1,47 @@
+name: Update contributed project stars
+
+on:
+  schedule:
+    - cron: "17 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Refresh contributed project list
+        run: python scripts/update_contributed_projects.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit README changes
+        run: |
+          if git diff --quiet -- README.md; then
+            echo "No README changes."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit \
+            -m "Keep profile project stars current" \
+            -m "The profile README contribution list is generated from a curated allowlist and the GitHub API so public proof points stay sorted without manual star-count edits.
+
+Constraint: Scheduled automation must only rewrite the generated README section
+Confidence: high
+Scope-risk: narrow
+Tested: python scripts/update_contributed_projects.py
+Not-tested: GitHub Actions scheduled run"
+          git push
