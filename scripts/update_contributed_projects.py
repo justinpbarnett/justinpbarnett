@@ -41,13 +41,15 @@ def github_request(url: str) -> dict | list:
         raise RuntimeError(f"GitHub API failed for {url}: {error.code} {details}") from error
 
 
-def load_repo_names() -> list[str]:
+def load_entries() -> list[dict]:
     entries = json.loads(REPOS.read_text(encoding="utf-8"))
-    names = []
+    normalized = []
     for entry in entries:
-        repo = entry["repo"] if isinstance(entry, dict) else entry
-        names.append(repo)
-    return names
+        if isinstance(entry, dict):
+            normalized.append(entry)
+        else:
+            normalized.append({"repo": entry})
+    return normalized
 
 
 def format_stars(count: int) -> str:
@@ -64,27 +66,36 @@ def merged_prs_by_author(repo: str) -> list[dict]:
     return data["items"]
 
 
-def has_approval_review(repo: str, pull_number: int) -> bool:
-    reviews = github_request(f"https://api.github.com/repos/{repo}/pulls/{pull_number}/reviews")
-    return any(review.get("state") == "APPROVED" for review in reviews)
+def explicit_pull_request(repo: str, pull_number: int) -> dict | None:
+    pull = github_request(f"https://api.github.com/repos/{repo}/pulls/{pull_number}")
+    if not pull.get("merged"):
+        return None
+    if pull.get("user", {}).get("login", "").lower() != AUTHOR.lower():
+        return None
+    return {
+        "number": pull["number"],
+        "url": pull["html_url"],
+    }
 
 
 def qualifying_pull_request(repo: str) -> dict | None:
     for pull in merged_prs_by_author(repo):
-        if has_approval_review(repo, pull["number"]):
-            return {
-                "number": pull["number"],
-                "url": pull["html_url"],
-            }
+        return {
+            "number": pull["number"],
+            "url": pull["html_url"],
+        }
     return None
 
 
 def build_section() -> str:
     repos = []
-    for repo in load_repo_names():
-        pull = qualifying_pull_request(repo)
+    for entry in load_entries():
+        repo = entry["repo"]
+        pull_number = entry.get("pull")
+        pull = explicit_pull_request(repo, int(pull_number)) if pull_number else qualifying_pull_request(repo)
         if not pull:
-            print(f"Skipping {repo}: no approved merged PR by {AUTHOR}", file=sys.stderr)
+            reason = f"PR #{pull_number} is not a merged PR by {AUTHOR}" if pull_number else f"no merged PR by {AUTHOR}"
+            print(f"Skipping {repo}: {reason}", file=sys.stderr)
             continue
 
         data = repo_metadata(repo)
