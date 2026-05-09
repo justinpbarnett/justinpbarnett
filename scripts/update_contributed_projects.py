@@ -91,14 +91,15 @@ def build_section() -> str:
     repos = []
     for entry in load_entries():
         repo = entry["repo"]
+        data = repo_metadata(repo)
+        canonical_repo = data["full_name"]
         pull_number = entry.get("pull")
-        pull = explicit_pull_request(repo, int(pull_number)) if pull_number else qualifying_pull_request(repo)
+        pull = explicit_pull_request(canonical_repo, int(pull_number)) if pull_number else qualifying_pull_request(canonical_repo)
         if not pull:
             reason = f"PR #{pull_number} is not a merged PR by {AUTHOR}" if pull_number else f"no merged PR by {AUTHOR}"
             print(f"Skipping {repo}: {reason}", file=sys.stderr)
             continue
 
-        data = repo_metadata(repo)
         repos.append(
             {
                 "name": data["full_name"],
