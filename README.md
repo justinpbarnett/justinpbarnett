@@ -2,22 +2,23 @@
 
 # Justin Barnett
 
-**AI systems for game engines, developer tools, and real operations.**
+**Full-stack software engineering, Rock RMS & ministry tech, and practical AI developer tools.**
 
 I build software that gives AI enough context and tools to do useful work inside existing workflows, while keeping humans in charge of judgment, safety, and taste.
 
 <p>
+  <a href="https://linkedin.com/in/justin-p-barnett"><img alt="LinkedIn" src="https://img.shields.io/badge/LinkedIn-justin--p--barnett-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white"></a>
   <a href="https://x.com/justinpbarnett"><img alt="X" src="https://img.shields.io/badge/X-@justinpbarnett-111111?style=for-the-badge&logo=x&logoColor=white"></a>
   <a href="https://github.com/CoplayDev/unity-mcp"><img alt="MCP for Unity" src="https://img.shields.io/badge/MCP%20for%20Unity-built%20%26%20sold-2f6f73?style=for-the-badge"></a>
-  <img alt="Focus" src="https://img.shields.io/badge/focus-practical%20AI%20tooling-3b4454?style=for-the-badge">
+  <img alt="Focus" src="https://img.shields.io/badge/focus-C%23%20%2F%20SQL%20%2F%20Rock%20RMS-3b4454?style=for-the-badge">
 </p>
 
 <p>
-  <img alt="Game engines" src="https://img.shields.io/badge/-game%20engines-181717?style=flat-square">
-  <img alt="MCP" src="https://img.shields.io/badge/-MCP-181717?style=flat-square">
-  <img alt="Agents" src="https://img.shields.io/badge/-agents-181717?style=flat-square">
-  <img alt="Local-first" src="https://img.shields.io/badge/-local--first-181717?style=flat-square">
-  <img alt="Developer tools" src="https://img.shields.io/badge/-developer%20tools-181717?style=flat-square">
+  <img alt="C# and .NET" src="https://img.shields.io/badge/-C%23%20%26%20.NET-181717?style=flat-square">
+  <img alt="SQL Server" src="https://img.shields.io/badge/-SQL%20Server-181717?style=flat-square">
+  <img alt="Rock RMS" src="https://img.shields.io/badge/-Rock%20RMS-181717?style=flat-square">
+  <img alt="Vue and TypeScript" src="https://img.shields.io/badge/-Vue%20%26%20TypeScript-181717?style=flat-square">
+  <img alt="Practical AI tooling" src="https://img.shields.io/badge/-practical%20AI%20tooling-181717?style=flat-square">
 </p>
 
 </div>
@@ -54,6 +55,21 @@ I build software that gives AI enough context and tools to do useful work inside
       Editor automation
     </td>
   </tr>
+  <tr>
+    <td width="58%">
+      <h3><a href="https://keep.church">Keep (keep.church)</a></h3>
+      <p>Volunteer pastoral care analytics tool built for my home church (New Life Canton) connected to Planning Center.</p>
+      <p>Analyzes check-in, giving, group, and attendance patterns across 271 households to flag drifting families for pastoral follow-up.</p>
+    </td>
+    <td width="42%">
+      <strong>Stack &amp; scope</strong><br>
+      Planning Center API<br>
+      PostgreSQL / Supabase<br>
+      REST APIs &amp; automated reports<br>
+      271 households piloted<br>
+      51 drifting households flagged
+    </td>
+  </tr>
 </table>
 
 ## Contributed
@@ -71,4 +87,6 @@ Projects I have worked on.
 
 ## Contact
 
+- Website: [justinpbarnett.com](https://justinpbarnett.com)
+- LinkedIn: [linkedin.com/in/justin-p-barnett](https://linkedin.com/in/justin-p-barnett)
 - X: [@justinpbarnett](https://x.com/justinpbarnett)
